@@ -57,7 +57,7 @@ GRIP_H_TWEAK = 0.00; //increase if bit bottoms out. knurl_h is 1.87mm, so THREAD
 // VARIABLES SETUP (you may change)
 GRIP_SHELL = 1.50; //thickness outside wall <-> grip cutout
 GRIP_R_CHANGE = 0.750; //how much the grip radius decreases
-SHAFT_HEIGHT            = 4;   //shaft is inserted into drill chuck
+SHAFT_HEIGHT            = 30;   //shaft is inserted into drill chuck
 TRANSFER_HEIGHT         = 3;   //"transfer" is between the bit and shaft
 OUTER_NUM_ANGLES        = 6;   //usually bits are a hexagon...
 GRIP_NUM_ANGLES         = 40;  //the number of "teeth"
@@ -72,7 +72,7 @@ GRIP_HEIGHT         = THREAD_H_MEASURE + GRIP_H_TWEAK;   //size of inside cone
 BIT_RADIUS          = BIT_D_MEASURE/2 + BIT_R_TWEAK;
 OUTER_RADIUS        = KNURL_R + GRIP_SHELL;
 
-
+ADD_HANDLE=true;
 
 union() {
   difference() {
@@ -83,7 +83,24 @@ union() {
   }
   transfer();
   shaft();
+  if (ADD_HANDLE) { 
+      handle(); 
+  }
 };
+
+module handle() {
+    handle_radius=10;
+    translate([0,0, SHAFT_HEIGHT+handle_radius]) {
+    difference() {
+          rotate([90,0,0]) {
+              cylinder(r=handle_radius, h=BIT_RADIUS*2, $fn=24, center=true);
+          }
+          translate([0,0,handle_radius]) {
+              cube([handle_radius*2, OUTER_RADIUS*2, handle_radius*2], center=true);
+          }
+      }
+    }
+}
 
 module grip() {
   union() {
